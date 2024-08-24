@@ -1,152 +1,86 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Prompts Vidéo pour Runway Gen-3 Alpha</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            color: #34495e;
-            font-weight: bold;
-        }
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        #prompt-output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #ecf0f1;
-            border-radius: 4px;
-            border-left: 5px solid #3498db;
-            color: #2c3e50;
-        }
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-            border-radius: 4px 4px 0 0;
-        }
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            font-size: 16px;
-            color: #333;
-        }
-        .tab button:hover {
-            background-color: #ddd;
-        }
-        .tab button.active {
-            background-color: #3498db;
-            color: white;
-        }
-        .tabcontent {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Générateur de Prompts Vidéo pour Runway Gen-3 Alpha</h1>
-        
-        <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Manual')">Manuel</button>
-            <button class="tablinks" onclick="openTab(event, 'Random')">Aléatoire</button>
-            <button class="tablinks" onclick="openTab(event, 'FileUpload')">Pièce jointe</button>
-        </div>
+// Fonctions pour générer les prompts
+function generateManualPrompt() {
+    const concept = document.getElementById('concept').value;
+    const elements = document.getElementById('elements').value;
+    const ambiance = document.getElementById('ambiance').value;
+    const camera = document.getElementById('camera').value;
+    const effets = document.getElementById('effets').value;
 
-        <div id="Manual" class="tabcontent">
-            <h2>Création manuelle de prompt</h2>
-            <form id="prompt-form">
-                <label for="concept">Concept général de la vidéo:</label>
-                <input type="text" id="concept" required>
+    const prompt = `A ${concept} featuring ${elements} with a ${ambiance} aesthetic. 
+                    ${camera} captures the scene. The video incorporates ${effets} for visual impact.`;
 
-                <label for="elements">Éléments spécifiques (personnages, objets, environnements):</label>
-                <input type="text" id="elements" required>
+    displayPrompt(prompt);
+}
 
-                <label for="ambiance">Ambiance ou esthétique recherchée:</label>
-                <input type="text" id="ambiance" required>
+function generateRandomPrompt() {
+    const concepts = ["futuristic cityscape", "underwater exploration", "magical forest"];
+    const elements = ["flying cars", "bioluminescent creatures", "ancient trees"];
+    const ambiances = ["cyberpunk", "mysterious", "whimsical"];
+    const cameras = ["sweeping drone shots", "intimate handheld", "smooth tracking"];
+    const effets = ["neon glows", "particle effects", "time distortions"];
 
-                <label for="camera">Mouvements de caméra ou angles de vue préférés:</label>
-                <input type="text" id="camera" required>
+    const prompt = `A ${randomChoice(concepts)} featuring ${randomChoice(elements)} with a ${randomChoice(ambiances)} aesthetic. 
+                    ${randomChoice(cameras)} captures the scene. The video incorporates ${randomChoice(effets)} for visual impact.`;
 
-                <label for="effets">Effets visuels particuliers souhaités:</label>
-                <input type="text" id="effets" required>
+    displayPrompt(prompt);
+}
 
-                <button type="submit">Générer le Prompt</button>
-            </form>
-        </div>
+function randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
 
-        <div id="Random" class="tabcontent">
-            <h2>Génération aléatoire de prompt</h2>
-            <button id="random-button">Générer un prompt aléatoire</button>
-        </div>
+function displayPrompt(prompt) {
+    document.getElementById('prompt-output').innerHTML = `<strong>Prompt généré:</strong><br>${prompt}`;
+}
 
-        <div id="FileUpload" class="tabcontent">
-            <h2>Génération basée sur une pièce jointe</h2>
-            <select id="file-type">
-                <option value="image">Image</option>
-                <option value="pdf">PDF</option>
-            </select>
-            <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.pdf">
-            <button onclick="handleFileUpload()">Générer un prompt à partir du fichier</button>
-        </div>
+function handleFileUpload() {
+    const fileInput = document.getElementById('file-input');
+    const fileType = document.getElementById('file-type').value;
 
-        <div id="prompt-output"></div>
-    </div>
+    let prompt = "";
+    if (fileType === "image") {
+        prompt = `An image depicting [description of the image]. `;
+        prompt += `Create a video that expands on the visual elements seen in the image. `;
+        prompt += `Incorporate the color scheme, composition, and main subjects of the image into a dynamic video sequence. `;
+        prompt += `The video should bring the static image to life, imagining movement and progression from the initial scene.`;
+    } else if (fileType === "pdf") {
+        prompt = `A document containing [description of the document's content]. `;
+        prompt += `Create a video that visualizes the key concepts and information from the document. `;
+        prompt += `Translate the main ideas into visual metaphors and scenes. `;
+        prompt += `The video should capture the essence and mood of the document, using abstract or representative imagery to convey its message.`;
+    }
 
-    <script src="script.js"></script>
-</body>
-</html>
+    displayPrompt(prompt);
+}
+
+// Gestionnaires d'événements
+document.getElementById('prompt-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    generateManualPrompt();
+});
+
+document.getElementById('random-button').addEventListener('click', generateRandomPrompt);
+
+// Fonction pour gérer les onglets
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Ouvrir l'onglet "Manuel" par défaut
+document.getElementsByClassName("tablinks")[0].click();
+
+// Gestionnaire d'événement pour l'input de fichier
+document.getElementById('file-input').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : "Aucun fichier sélectionné";
+    console.log("Fichier sélectionné :", fileName);
+});
